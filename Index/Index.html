@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" href="./Index.css"/>
+    <link rel="icon" href="../Assets/icon.png" type="image/x-icon"/>
+    <script src="./Index.js" defer></script>
+    <title>TMT Dashboard</title>
+    
+</head>
+<body>
+    <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+    <div class="sidebar" id="sidebar">
+        <ul>
+            
+            <li class="active"><a href="Index.html">Dashboard</a></li>
+            <li><a href="../Pages/Route.html">Route card</a></li>
+            <li><a href="../Pages/Create.html">Create Load</a></li>
+            <li><a href="../Pages/Loadin.html">Load IN</a></li>
+            <li><a href="../Pages/Dispatch.html">Dispatch</a></li>
+            <li><a href="../Pages/Invoice.html">Invoices</a></li>
+            <li><a href="../Pages/Vouchers.html">Vouchers</a></li>
+            <li><a href="../Pages/Stockreport.html">Stock report</a></li>
+            <li><a href="../Pages/Return.html">Return</a></li>
+            <li><a href="../Pages/Reports.html">Reports</a></li>
+            <li><a href="../Pages/GRN.html">GRN Update</a></li>
+            <li><a href="../Pages/Masters.html">Masters</a></li>
+        </ul>
+    </div>
+    <div class="content" id="content">
+        <div class="header">
+            <div class="logo">
+                <img src="../Assets/Logo.png" alt="TMT Logo" />
+                TMT
+            </div>
+            <div class="user-info">
+                <span>DEMO Transport | ammarun foundries</span>
+                <span>17-04-2025</span>
+                <button id="avatarBtn" class="avatar">
+                  <img src="../Assets/Profile-image.png" alt="User Avatar" />
+                </button>
+                <div id="dropdownMenu" class="dropdown">
+                  <a href="../Login.html">Logout</a>
+                </div>
+              </div>
+              
+        </div>
+
+        <div class="main-content">
+            <h1>Hi there, ammarun foundries! 👋</h1>
+            <div class="stats">
+                <div class="stat-card">
+                    <span class="label">Total Vendors</span>
+                    <span class="value">4</span>
+                </div>
+                <div class="stat-card">
+                    <span class="label">Total Receivables</span>
+                    <span class="value">$349,246</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="chatbot-btn" onclick="toggleChatbot()">💬</button>
+    <div class="chatbot-container" id="chatbotContainer">
+        <div class="chatbot-header">
+            <h3>TMT Assistant</h3>
+            <button class="close-btn" onclick="toggleChatbot()">✖</button>
+        </div>
+        <div class="chatbot-body" id="chatbotBody">
+            <div class="bot-message">Hello! I'm TMT Assistant. How can I help you today?</div>
+        </div>
+        <div class="chatbot-footer">
+            <input type="text" id="chatbotInput" placeholder="Type your message..." />
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    
+</body>
+</html>

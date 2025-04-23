@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../Assets/icon.png" type="image/x-icon">
+
+    <title>TMT Dispatch</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e9ecef;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: #fff;
+            padding: 20px 0;
+            transition: transform 0.3s ease;
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+        }
+        .sidebar.closed {
+            transform: translateX(-250px);
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar ul li {
+            padding: 15px 20px;
+            cursor: pointer;
+        }
+        .sidebar ul li:hover, .sidebar ul li.active {
+            background-color: #34495e;
+        }
+        .sidebar ul li a {
+            text-decoration: none;
+            color: #fff;
+            font-size: 16px;
+        }
+        .toggle-btn {
+            display: none;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            position: fixed;
+            left: 10px;
+            top: 10px;
+            z-index: 1000;
+        }
+        @media (max-width: 768px) {
+            .toggle-btn {
+                display: block;
+            }
+            .sidebar {
+                transform: translateX(-250px);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+        }
+        .content {
+            flex-grow: 1;
+            margin-left: 250px;
+            transition: margin-left 0.3s ease;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .content.shifted {
+            margin-left: 0;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff;
+            padding: 15px 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .header .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+        }
+        .header .logo img {
+            width: 40px;
+            margin-right: 10px;
+        }
+        .header .user-info {
+            display: flex;
+            align-items: center;
+        }
+        .header .user-info span {
+            margin-right: 15px;
+            color: #666;
+            font-size: 14px;
+        }
+        .header .user-info .avatar {
+            width: 30px;
+            height: 30px;
+            background: #ccc;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+        .header .user-info .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .main-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .filters {
+            margin-bottom: 20px;
+        }
+        .filters a {
+            text-decoration: none;
+            padding: 5px 10px;
+            margin-right: 10px;
+            color: #333;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .filters a.active {
+            background: #007bff;
+            color: #fff;
+            border-color: #007bff;
+        }
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .search-bar input {
+            padding: 10px;
+            width: 200px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .dispatch-btn {
+            background: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .dispatch-btn:hover {
+            background: #0056b3;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+        th {
+            background-color: #f8f9fa;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        td {
+            color: #333;
+        }
+        td input[type="checkbox"] {
+            margin: 0;
+            vertical-align: middle;
+        }
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-top: 20px;
+            color: #666;
+        }
+        .pagination button {
+            background: #fff;
+            border: 1px solid #ccc;
+            padding: 5px 10px;
+            margin: 0 5px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .pagination select {
+            padding: 5px;
+            border-radius: 5px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+    <div class="sidebar" id="sidebar">
+        <ul>
+            <li ><a href="../Index/Index.html">Dashboard</a></li>
+            <li><a href="../Pages/Route.html">Route card</a></li>
+            <li><a href="../Pages/Create.html">Create Load</a></li>
+            <li><a href="../Pages/Loadin.html">Load IN</a></li>
+            <li><a href="../Pages/Dispatch.html">Dispatch</a></li>
+            <li><a href="../Pages/Invoice.html">Invoices</a></li>
+            <li><a href="../Pages/Vouchers.html">Vouchers</a></li>
+            <li><a href="../Pages/Stockreport.html">Stock report</a></li>
+            <li><a href="../Pages/Return.html">Return</a></li>
+            <li class="active"><a href="../Pages/Reports.html">Reports</a></li>
+            <li><a href="../Pages/GRN.html">GRN Update</a></li>
+            <li><a href="../Pages/Masters.html">Masters</a></li>
+        </ul>
+    </div>
+    <div class="content" id="content">
+        <div class="header">
+            <div class="logo">
+                <img src="../Assets/Logo.png" alt="TMT Logo">
+                TMT
+            </div>
+            <div class="user-info">
+                <span>DEMO Transport | ammarun foundries</span>
+                <span>17-04-2025</span>
+                <div class="avatar"><img src="../Assets/Profile-image.png" alt="User Avatar"></div>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="filters">
+                <a href="#" class="active">Dispatch</a>
+                <a href="#">Dispatched List</a>
+            </div>
+            <div class="controls">
+                <div class="search-bar">
+                    <input type="text" placeholder="Search" id="searchInput">
+                </div>
+                <button class="dispatch-btn">Dispatch</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>LR #</th>
+                        <th>Vendor Name</th>
+                        <th>Part Number</th>
+                        <th>Sap Number</th>
+                        <th>Invoice Number</th>
+                        <th>Invoice Date</th>
+                        <th>Invoice Weight</th>
+                        <th>Invoice Qty</th>
+                        <th>Stock Qty</th>
+                        <th>Dispatch Qty</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="checkbox"> 23</td>
+                        <td>From Vendor</td>
+                        <td>1545</td>
+                        <td>662562555</td>
+                        <td>35</td>
+                        <td>23-08-2023</td>
+                        <td>345</td>
+                        <td>99</td>
+                        <td>99</td>
+                        <td>99</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"> 22</td>
+                        <td>From Vendor</td>
+                        <td>1545</td>
+                        <td>662562555</td>
+                        <td>456</td>
+                        <td>22-08-2023</td>
+                        <td>546</td>
+                        <td>546</td>
+                        <td>546</td>
+                        <td>546</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"> 20</td>
+                        <td>Vendor</td>
+                        <td>1545</td>
+                        <td>662562555</td>
+                        <td>22</td>
+                        <td>13-07-2023</td>
+                        <td>22</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"> 19</td>
+                        <td>From Vendor</td>
+                        <td>1545</td>
+                        <td>662562555</td>
+                        <td>11</td>
+                        <td>13-07-2023</td>
+                        <td>11</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"> 18</td>
+                        <td>From Vendor</td>
+                        <td>1545</td>
+                        <td>662562555</td>
+                        <td>1</td>
+                        <td>13-07-2023</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"> 17</td>
+                        <td>From Vendor</td>
+                        <td>1545</td>
+                        <td>662562555</td>
+                        <td>11</td>
+                        <td>12-07-2023</td>
+                        <td>11</td>
+                        <td>30</td>
+                        <td>30</td>
+                        <td>30</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"> 15</td>
+                        <td>From Vendor</td>
+                        <td>1545</td>
+                        <td>662562555</td>
+                        <td>33</td>
+                        <td>09-07-2023</td>
+                        <td>33</td>
+                        <td>60</td>
+                        <td>60</td>
+                        <td>60</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"> 14</td>
+                        <td>From Vendor</td>
+                        <td>1545</td>
+                        <td>662562555</td>
+                        <td>22</td>
+                        <td>09-07-2023</td>
+                        <td>22</td>
+                        <td>40</td>
+                        <td>40</td>
+                        <td>40</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"> 13</td>
+                        <td>From Vendor</td>
+                        <td>1545</td>
+                        <td>662562555</td>
+                        <td>11</td>
+                        <td>09-07-2023</td>
+                        <td>11</td>
+                        <td>20</td>
+                        <td>20</td>
+                        <td>20</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"> 11</td>
+                        <td>From Vendor</td>
+                        <td>1545</td>
+                        <td>662562555</td>
+                        <td>22</td>
+                        <td>09-07-2023</td>
+                        <td>22</td>
+                        <td>50</td>
+                        <td>25</td>
+                        <td>25</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="pagination">
+                <span>Showing 1 - 10 of 19 Data</span>
+                <button><</button>
+                <button>1</button>
+                <button>2</button>
+                <button>></button>
+                <select>
+                    <option>10 / page</option>
+                    <option>20 / page</option>
+                    <option>50 / page</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const content = document.getElementById('content');
+            sidebar.classList.toggle('open');
+            content.classList.toggle('shifted');
+            sidebar.classList.toggle('closed');
+        }
+
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>

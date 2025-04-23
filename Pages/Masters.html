@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../Assets/icon.png" type="image/x-icon">
+    
+    <title>Management System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #e9ecef;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: #fff;
+            padding: 20px 0;
+            transition: transform 0.3s ease;
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+        }
+        .sidebar.closed {
+            transform: translateX(-250px);
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar ul li {
+            padding: 15px 20px;
+            cursor: pointer;
+        }
+        .sidebar ul li:hover, .sidebar ul li.active {
+            background-color: #34495e;
+        }
+        .sidebar ul li a {
+            text-decoration: none;
+            color: #fff;
+            font-size: 16px;
+        }
+        .toggle-btn {
+            display: none;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            position: fixed;
+            left: 10px;
+            top: 10px;
+            z-index: 1000;
+        }
+        @media (max-width: 768px) {
+            .toggle-btn {
+                display: block;
+            }
+            .sidebar {
+                transform: translateX(-250px);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+        }
+        .content {
+            flex-grow: 1;
+            margin-left: 250px;
+            transition: margin-left 0.3s ease;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .content.shifted {
+            margin-left: 0;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff;
+            padding: 15px 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+        .header .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+        }
+        .header .logo img {
+            width: 40px;
+            margin-right: 10px;
+        }
+        .header .user-info {
+            display: flex;
+            align-items: center;
+        }
+        .header .user-info span {
+            margin-right: 15px;
+            color: #666;
+            font-size: 14px;
+        }
+        .header .user-info .avatar {
+            width: 30px;
+            height: 30px;
+            background: #ccc;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+        .header .user-info .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .tabs {
+            overflow: hidden;
+            border-bottom: 1px solid #ccc;
+            background-color: #f1f1f1;
+        }
+        .tabs button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+        }
+        .tabs button:hover {
+            background-color: #ddd;
+        }
+        .tabs button.active {
+            border-bottom: 2px solid #007bff;
+            color: #007bff;
+        }
+        .tabcontent {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-top: none;
+        }
+        .tabcontent.active {
+            display: block;
+        }
+        .search-container {
+            margin-bottom: 20px;
+        }
+        .search-container input {
+            padding: 8px;
+            width: 200px;
+        }
+        .add-btn {
+            float: right;
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f9f9f9;
+        }
+        .action-btn {
+            padding: 5px;
+            border: none;
+            cursor: pointer;
+        }
+        .edit-btn {
+            background-color: #28a745;
+            color: white;
+        }
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .pagination button {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .pagination select {
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+    <div class="sidebar" id="sidebar">
+        <ul>
+            <li ><a href="../Index/Index.html">Dashboard</a></li>
+            <li><a href="../Pages/Route.html">Route card</a></li>
+            <li><a href="../Pages/Create.html">Create Load</a></li>
+            <li><a href="../Pages/Loadin.html">Load IN</a></li>
+            <li><a href="../Pages/Dispatch.html">Dispatch</a></li>
+            <li><a href="../Pages/Invoice.html">Invoices</a></li>
+            <li><a href="../Pages/Vouchers.html">Vouchers</a></li>
+            <li><a href="../Pages/Stockreport.html">Stock report</a></li>
+            <li><a href="../Pages/Return.html">Return</a></li>
+            <li><a href="../Pages/Reports.html">Reports</a></li>
+            <li><a href="../Pages/GRN.html">GRN Update</a></li>
+            <li class="active"><a href="../Pages/Masters.html">Masters</a></li>
+        </ul>
+    </div>
+    <div class="content" id="content">
+        <div class="header">
+            <div class="logo">
+                <img src="../Assets/Logo.png" alt="TMT Logo">
+                TMT
+            </div>
+            <div class="user-info">
+                <span>DEMO Transport | ammarun foundries</span>
+                <span>17-04-2025</span>
+                <div class="avatar"><img src="../Assets/Profile-image.png" alt="User Avatar"></div>
+            </div>
+        </div>
+    <div class="tabs">
+        <button class="tablinks" onclick="openTab(event, 'PartNumbers')" id="defaultOpen">Part Numbers</button>
+        <button class="tablinks" onclick="openTab(event, 'Vehicles')">Vehicles</button>
+        <button class="tablinks" onclick="openTab(event, 'Locations')">Locations</button>
+        <button class="tablinks" onclick="openTab(event, 'Assets')">Assets</button>
+        <button class="tablinks" onclick="openTab(event, 'Users')">Users</button>
+        <button class="tablinks" onclick="openTab(event, 'VendorMapping')">Vendor Mapping</button>
+        <button class="tablinks" onclick="openTab(event, 'Credentials')">Credentials</button>
+        <button class="tablinks" onclick="openTab(event, 'AccBooks')">Acc Books</button>
+        <button class="tablinks" onclick="openTab(event, 'VoucherHead')">Voucher Head</button>
+        <button class="tablinks" onclick="openTab(event, 'Vendors')">Vendors</button>
+    </div>
+
+    <!-- Part Numbers Tab -->
+    <div id="PartNumbers" class="tabcontent">
+        <div class="search-container">
+            <input type="text" placeholder="Search">
+            <button class="add-btn">Add Part Number</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Part Number</th>
+                    <th>SAP Number</th>
+                    <th>Warehouse</th>
+                    <th>Remarks</th>
+                    <th>Created Date</th>
+                    <th>Created By</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1545</td>
+                    <td>662562555</td>
+                    <td>Import</td>
+                    <td></td>
+                    <td>25/05/2023 8:22 PM</td>
+                    <td>Prabhu</td>
+                    <td>
+                        <button class="action-btn edit-btn">✎</button>
+                        <button class="action-btn delete-btn">✖</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="pagination">
+            <span>Showing 1 - 1 of 1 Data</span>
+            <div>
+                <button>&lt; Previous</button>
+                <button>1</button>
+                <button>Next &gt;</button>
+                <select>
+                    <option>10 / page</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vehicles Tab -->
+    <div id="Vehicles" class="tabcontent">
+        <div class="search-container">
+            <input type="text" placeholder="Search">
+            <button class="add-btn">Add Vehicle</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Vehicle Name</th>
+                    <th>Reg. Number</th>
+                    <th>Vehicle Type</th>
+                    <th>Remarks</th>
+                    <th>Created Date</th>
+                    <th>Created By</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>i20</td>
+                    <td>TN 39 CS 7651</td>
+                    <td>Own</td>
+                    <td></td>
+                    <td>13/04/2023 10:59 PM</td>
+                    <td>Prabhu</td>
+                    <td>
+                        <button class="action-btn edit-btn">✎</button>
+                        <button class="action-btn delete-btn">✖</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="pagination">
+            <span>Showing 1 - 1 of 1 Data</span>
+            <div>
+                <button>&lt; Previous</button>
+                <button>1</button>
+                <button>Next &gt;</button>
+                <select>
+                    <option>10 / page</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Locations Tab -->
+    <div id="Locations" class="tabcontent">
+        <div class="search-container">
+            <input type="text" placeholder="Search">
+            <button class="add-btn">Add Location</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Location Name</th>
+                    <th>Remarks</th>
+                    <th>Created Date</th>
+                    <th>Created By</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>CBE</td>
+                    <td>REM</td>
+                    <td>12/07/2023 9:24 PM</td>
+                    <td>Prabhu</td>
+                    <td>
+                        <button class="action-btn edit-btn">✎</button>
+                        <button class="action-btn delete-btn">✖</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>TUP</td>
+                    <td>Remarks</td>
+                    <td>15/05/2023 9:54 PM</td>
+                    <td>Sathish</td>
+                    <td>
+                        <button class="action-btn edit-btn">✎</button>
+                        <button class="action-btn delete-btn">✖</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="pagination">
+            <span>Showing 1 - 2 of 2 Data</span>
+            <div>
+                <button>&lt; Previous</button>
+                <button>1</button>
+                <button>Next &gt;</button>
+                <select>
+                    <option>10 / page</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assets Tab -->
+    <div id="Assets" class="tabcontent">
+        <div class="search-container">
+            <input type="text" placeholder="Search">
+            <button class="add-btn">Add Asset</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Asset Name</th>
+                    <th>Opening Balance</th>
+                    <th>Opening Date</th>
+                    <th>Created Date</th>
+                    <th>Created By</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="6" style="text-align: center;">No Data</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="pagination">
+            <span>Showing 0 - 0 of 0 Data</span>
+            <div>
+                <button>&lt; Previous</button>
+                <button>1</button>
+                <button>Next &gt;</button>
+                <select>
+                    <option>10 / page</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Users Tab -->
+    <div id="Users" class="tabcontent">
+        <div class="search-container">
+            <input type="text" placeholder="Search">
+            <button class="add-btn">Create User</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Mobile</th>
+                    <th>Access Level</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>PRABHU</td>
+                    <td>Palanisamy</td>
+                    <td>successprabhu@gmail.com</td>
+                    <td>9940715788</td>
+                    <td>Admin</td>
+                    <td>
+                        <button class="action-btn edit-btn">✎</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Sathish</td>
+                    <td>Saminathan</td>
+                    <td>sathishce1975@gmail.com</td>
+                    <td>7904557013</td>
+                    <td>Staff</td>
+                    <td>
+                        <button class="action-btn edit-btn">✎</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>ammarun</td>
+                    <td>foundries</td>
+                    <td>demo@tmttransport.in</td>
+                    <td>7373034834</td>
+                    <td>Admin</td>
+                    <td>
+                        <button class="action-btn edit-btn">✎</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="pagination">
+            <span>Showing 1 - 3 of 3 Data</span>
+            <div>
+                <button>&lt; Previous</button>
+                <button>1</button>
+                <button>Next &gt;</button>
+                <select>
+                    <option>10 / page</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vendor Mapping Tab -->
+    <div id="VendorMapping" class="tabcontent">
+        <div class="search-container">
+            <input type="text" placeholder="Search">
+            <button class="add-btn">Create Vendor Mapping</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Vendor Name</th>
+                    <th>Part Number</th>
+                    <th>SAP Number</th>
+                    <th>Critical Qty</th>
+                    <th>Minimum Qty</th>
+                    <th>Maximum Qty</th>
+                    <th>Remarks</th>
+                    <th>Created Date</th>
+                    <th>Created By</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>From Vendor</td>
+                    <td>1545</td>
+                    <td>662562555</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td></td>
+                    <td>21/06/2023 3:12 PM</td>
+                    <td>Prabhu</td>
+                    <td>
+                        <button class="action-btn edit-btn">✎</button>
+                        <button class="action-btn delete-btn">✖</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Vendor</td>
+                    <td>1545</td>
+                    <td>662562555</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td></td>
+                    <td>25/05/2023 8:22 PM</td>
+                    <td>Prabhu</td>
+                    <td>
+                        <button class="action-btn edit-btn">✎</button>
+                        <button class="action-btn delete-btn">✖</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="pagination">
+            <span>Showing 1 - 2 of 2 Data</span>
+            <div>
+                <button>&lt; Previous</button>
+                <button>1</button>
+                <button>Next &gt;</button>
+                <select>
+                    <option>10 / page</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Credentials Tab -->
+    <div id="Credentials" class="tabcontent">
+        <div class="search-container">
+            <input type="text" placeholder="Search">
+            <button class="add-btn">Add Credential</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Credential Name</th>
+                    <th>Username</th>
+                    <th>URL</th>
+                    <th>Auth Key</th>
+                    <th>GSTIN</th>
+                    <th>Created Date</th>
+                    <th>Created By</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="8" style="text-align: center;">No Data</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="pagination">
+            <span>Showing 0 - 0 of 0 Data</span>
+            <div>
+                <button>&lt; Previous</button>
+                <button>1</button>
+                <button>Next &gt;</button>
+                <select>
+                    <option>10 / page</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Acc Books Tab -->
+    <div id="AccBooks" class="tabcontent">
+        <div class="search-container">
+            <input type="text" placeholder="Search">
+            <button class="add-btn">Add Account Book</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Account Book Name</th>
+                    <th>Opening Balance</th>
+                    <th>Closing Balance</th>
+                    <th>Created By</th>
+                    <th>Created Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Account Book 1</td>
+                    <td></td>
+                    <td></td>
+                    <td>Prabhu</td>
+                    <td>13/04/2023 11:05 PM</td>
+                    <td>
+                        <button class="action-btn edit-btn">✎</button>
+                        <button class="action-btn delete-btn">✖</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Account Book</td>
+                    <td></td>
+                    <td></td>
+                    <td>Prabhu</td>
+                    <td>13/04/2023 11:03 PM</td>
+                    <td>
+                        <button class="action-btn edit-btn">✎</button>
+                        <button class="action-btn delete-btn">✖</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Cash Books</td>
+                    <td></td>
+                    <td></td>
+                    <td>Prabhu</td>
+                    <td>13/04/2023 11:01 PM</td>
+                    <td>
+                        <button class="action-btn edit-btn">✎</button>
+                        <button class="action-btn delete-btn">✖</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="pagination">
+            <span>Showing 1 - 3 of 3 Data</span>
+            <div>
+                <button>&lt; Previous</button>
+                <button>1</button>
+                <button>Next &gt;</button>
+                <select>
+                    <option>10 / page</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voucher Head Tab -->
+    <div id="VoucherHead" class="tabcontent">
+        <div class="search-container">
+            <input type="text" placeholder="Search">
+            <button class="add-btn">Add Voucher Head</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Voucher Type</th>
+                    <th>Voucher Name</th>
+                    <th>Opening Balance</th>
+                    <th>Closing Balance</th>
+                    <th>Remarks</th>
+                    <th>Created Date</th>
+                    <th>Created By</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="8" style="text-align: center;">No Data</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="pagination">
+            <span>Showing 0 - 0 of 0 Data</span>
+            <div>
+                <button>&lt; Previous</button>
+                <button>1</button>
+                <button>Next &gt;</button>
+                <select>
+                    <option>10 / page</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vendors Tab -->
+    <div id="Vendors" class="tabcontent">
+        <div class="search-container">
+            <input type="text" placeholder="Search">
+            <button class="add-btn">Add Vendor</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Vendor Name</th>
+                    <th>Vendor Type</th>
+                    <th>GSTIN</th>
+                    <th>Warehouse Rate</th>
+                    <th>Transport</th>
+                    <th>Mobile</th>
+                    <th>Email</th>
+                    <th>Place of Supply</th>
+                    <th>Remarks</th>
+                    <th>Created Date</th>
+                    <th>Created By</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Test with value</td>
+                    <td>Supplier</td>
+                    <td>1231232</td>
+                    <td>20</td>
+                    <td>200</td>
+                    <td>9090909092</td>
+                    <td>sadf2222@gmail.com</td>
+                    <td>Tamilnadu</td>
+                    <td>rema</td>
+                    <td>17/08/2023 12:58 PM</td>
+                    <td>Prabhu</td>
+                    <td>
+                        <button class="action-btn edit-btn">✎</button>
+                        <button class="action-btn delete-btn">✖</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>To Vendor</td>
+                    <td>Supplier</td>
+                    <td>1231232</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>8999899899</td>
+                    <td></td>
+                    <td>Tamilnadu</td>
+                    <td></td>
+                    <td>21/06/2023 3:10 PM</td>
+                    <td>Prabhu</td>
+                    <td>
+                        <button class="action-btn edit-btn">✎</button>
+                        <button class="action-btn delete-btn">✖</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>From Vendor</td>
+                    <td>Supplier</td>
+                    <td>12312</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>8999899899</td>
+                    <td></td>
+                    <td>Tamilnadu</td>
+                    <td></td>
+                    <td>21/06/2023 3:10 PM</td>
+                    <td>Prabhu</td>
+                    <td>
+                        <button class="action-btn edit-btn">✎</button>
+                        <button class="action-btn delete-btn">✖</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Vendor</td>
+                    <td>Supplier</td>
+                    <td>12312</td>
+                    <td>1.75</td>
+                    <td>1.5</td>
+                    <td>9090909090</td>
+                    <td>sadf@gmail.com</td>
+                    <td>Maharashtra</td>
+                    <td>REMARK</td>
+                    <td>13/04/2023 11:00 PM</td>
+                    <td>Prabhu</td>
+                    <td>
+                        <button class="action-btn edit-btn">✎</button>
+                        <button class="action-btn delete-btn">✖</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="pagination">
+            <span>Showing 1 - 4 of 4 Data</span>
+            <div>
+                <button>&lt; Previous</button>
+                <button>1</button>
+                <button>Next &gt;</button>
+                <select>
+                    <option>10 / page</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("active");
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        // Open the default tab
+        document.getElementById("defaultOpen").click();
+    </script>
+</body>
+</html>

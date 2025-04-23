@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../Assets/icon.png" type="image/x-icon">
+
+    <title>TMT Route Card</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e9ecef;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: #fff;
+            padding: 20px 0;
+            transition: transform 0.3s ease;
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+        }
+        .sidebar.closed {
+            transform: translateX(-250px);
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar ul li {
+            padding: 15px 20px;
+            cursor: pointer;
+        }
+        .sidebar ul li:hover, .sidebar ul li.active {
+            background-color: #34495e;
+        }
+        .sidebar ul li a {
+            text-decoration: none;
+            color: #fff;
+            font-size: 16px;
+        }
+        .toggle-btn {
+            display: none;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            position: fixed;
+            left: 10px;
+            top: 10px;
+            z-index: 1000;
+        }
+        @media (max-width: 768px) {
+            .toggle-btn {
+                display: block;
+            }
+            .sidebar {
+                transform: translateX(-250px);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+        }
+        .content {
+            flex-grow: 1;
+            margin-left: 250px;
+            transition: margin-left 0.3s ease;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .content.shifted {
+            margin-left: 0;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff;
+            padding: 15px 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .header .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+        }
+        .header .logo img {
+            width: 40px;
+            margin-right: 10px;
+        }
+        .header .user-info {
+            display: flex;
+            align-items: center;
+        }
+        .header .user-info span {
+            margin-right: 15px;
+            color: #666;
+            font-size: 14px;
+        }
+        .header .user-info .avatar {
+            width: 30px;
+            height: 30px;
+            background: #ccc;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+        .header .user-info .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .main-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .search-bar {
+            margin-bottom: 20px;
+        }
+        .search-bar input {
+            padding: 10px;
+            width: 200px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+        th {
+            background-color: #f8f9fa;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        td {
+            color: #333;
+        }
+        td input[type="checkbox"] {
+            margin: 0;
+            vertical-align: middle;
+        }
+        .action-btn {
+            background: #28a745;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .action-btn:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+    <div class="sidebar" id="sidebar">
+        <ul>
+            <li ><a href="../Index/Index.html">Dashboard</a></li>
+            <li class="active"><a href="../Pages/Route.html">Route card</a></li>
+            <li><a href="../Pages/Create.html">Create Load</a></li>
+            <li><a href="../Pages/Loadin.html">Load IN</a></li>
+            <li><a href="../Pages/Dispatch.html">Dispatch</a></li>
+            <li><a href="../Pages/Invoice.html">Invoices</a></li>
+            <li><a href="../Pages/Vouchers.html">Vouchers</a></li>
+            <li><a href="../Pages/Stockreport.html">Stock report</a></li>
+            <li><a href="../Pages/Return.html">Return</a></li>
+            <li><a href="../Pages/Reports.html">Reports</a></li>
+            <li><a href="../Pages/GRN.html">GRN Update</a></li>
+            <li><a href="../Pages/Masters.html">Masters</a></li>
+        </ul>
+    </div>
+    <div class="content" id="content">
+        <div class="header">
+            <div class="logo">
+                <img src="../Assets/Logo.png" alt="TMT Logo">
+                TMT
+            </div>
+            <div class="user-info">
+                <span>DEMO Transport | ammarun foundries</span>
+                <span>17-04-2025</span>
+                <div class="avatar"><img src="../Assets/Profile-image.png" alt="User Avatar"></div>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="search-bar">
+                <input type="text" placeholder="Search" id="searchInput">
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Vendor Name</th>
+                        <th>Part Number</th>
+                        <th>Invoice Number</th>
+                        <th>Invoice Date</th>
+                        <th>Location</th>
+                        <th>Stock Qty</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="checkbox"> From Vendor</td>
+                        <td>1545</td>
+                        <td>35</td>
+                        <td>17-04-2025</td>
+                        <td>CBE</td>
+                        <td>54</td>
+                        <td><button class="action-btn">View</button></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"> From Vendor</td>
+                        <td>1545</td>
+                        <td>35</td>
+                        <td>17-04-2025</td>
+                        <td>TUP</td>
+                        <td>45</td>
+                        <td><button class="action-btn">View</button></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"> From Vendor</td>
+                        <td>1545</td>
+                        <td>456</td>
+                        <td>17-04-2025</td>
+                        <td>CBE</td>
+                        <td>546</td>
+                        <td><button class="action-btn">View</button></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"> From Vendor</td>
+                        <td>1545</td>
+                        <td>33</td>
+                        <td>17-04-2025</td>
+                        <td>CBE</td>
+                        <td>0</td>
+                        <td><button class="action-btn">View</button></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"> Vendor</td>
+                        <td>1545</td>
+                        <td>22</td>
+                        <td>17-04-2025</td>
+                        <td>CBE</td>
+                        <td>1</td>
+                        <td><button class="action-btn">View</button></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"> From Vendor</td>
+                        <td>1545</td>
+                        <td>11</td>
+                        <td>17-04-2025</td>
+                        <td>CBE</td>
+                        <td>1</td>
+                        <td><button class="action-btn">View</button></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"> From Vendor</td>
+                        <td>1545</td>
+                        <td>11</td>
+                        <td>17-04-2025</td>
+                        <td>CBE</td>
+                        <td>1</td>
+                        <td><button class="action-btn">View</button></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"> From Vendor</td>
+                        <td>1545</td>
+                        <td>11</td>
+                        <td>17-04-2025</td>
+                        <td>TUP</td>
+                        <td>8</td>
+                        <td><button class="action-btn">View</button></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"> From Vendor</td>
+                        <td>1545</td>
+                        <td>11</td>
+                        <td>17-04-2025</td>
+                        <td>CBE</td>
+                        <td>2</td>
+                        <td><button class="action-btn">View</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const content = document.getElementById('content');
+            sidebar.classList.toggle('open');
+            content.classList.toggle('shifted');
+            sidebar.classList.toggle('closed');
+        }
+
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>
