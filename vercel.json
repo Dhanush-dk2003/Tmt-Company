@@ -1,7 +1,9 @@
 {
     "rewrites" :[
       { "source": "/", "destination": "/Login.html" },
-      { "source": "/dashboard", "destination": "/Index/Index.html" }
+      { "source": "/dashboard", "destination": "/Index/Index.html" },
+        { "source": "/dashboard", "destination": "/Index/Index.css" },
+      { "source": "/dashboard", "destination": "/Index/Index.js" }
     ]
 }
   
